@@ -17,6 +17,7 @@ import subprocess, os.path, tempfile
 from .. import mlog
 from .. import coredata
 from ..mesonlib import EnvironmentException, version_compare, Popen_safe, listify
+from . import compilers
 
 from .compilers import (
     GCC_MINGW,
@@ -771,6 +772,12 @@ class ClangCCompiler(ClangCompiler, CCompiler):
 
     def get_option_link_args(self, options):
         return []
+
+    def get_linker_always_args(self):
+        basic = super().get_linker_always_args()
+        if self.clang_type == compilers.CLANG_OSX:
+            return basic + ['-Wl,-headerpad_max_install_names']
+        return basic
 
 
 class GnuCCompiler(GnuCompiler, CCompiler):
